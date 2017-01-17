@@ -9,5 +9,5 @@
  * @author etudiant
  */
 public class Server {
-    
+    private String name;
 }

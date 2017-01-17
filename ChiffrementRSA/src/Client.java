@@ -9,5 +9,5 @@
  * @author etudiant
  */
 public class Client {
-    
+    private String name;
 }
