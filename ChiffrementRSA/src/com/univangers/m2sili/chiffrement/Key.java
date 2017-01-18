@@ -17,5 +17,12 @@ public class Key {
         n= a;
         e= b;
     };
+    
+    @Override
+    public String toString(){
+        String res;
+        res= "(" + n + " ; " + e + ")";
+        return res;
+    }
 }
 	
