@@ -7,16 +7,25 @@ import java.util.Random;
  * Class that represents a key
  */
 public class Key {
-    private BigInteger p, q, n, m, e;
+    private BigInteger p, q, n, m, e, u, v;
 
-    
     public Key(){
         p= new BigInteger("100000000000000");
         q= new BigInteger("100000000000000");
+        n= new BigInteger("100000000000000");
+        m= new BigInteger("100000000000000");
+        e= new BigInteger("100000000000000");
+        u= new BigInteger("100000000000000");
+        v= new BigInteger("100000000000000");
     }
     public Key(BigInteger BI_p, BigInteger BI_q){
         p= BI_p;
         q= BI_q;
+        n= new BigInteger("100000000000000");
+        m= new BigInteger("100000000000000");
+        e= new BigInteger("100000000000000");
+        u= new BigInteger("100000000000000");
+        v= new BigInteger("100000000000000");
     };
     
     public void setP(BigInteger p) { this.p= p; }
@@ -28,6 +37,10 @@ public class Key {
     public void setM(BigInteger m) { this.m= m; }
 
     public void setE(BigInteger e) { this.e= e; }
+    
+    public void setU(BigInteger u) { this.u = u; }
+
+    public void setV(BigInteger v) { this.v = v; }
 
     public BigInteger getP() { return p; }
 
@@ -38,6 +51,10 @@ public class Key {
     public BigInteger getM() { return m; }
 
     public BigInteger getE() { return e; }
+    
+    public BigInteger getU() { return u; }
+
+    public BigInteger getV() { return v; }
     
     public void computeN(){ setN(p.multiply(q)); }
     
@@ -74,10 +91,23 @@ public class Key {
     
     public void computeE(){ setE(getFirstPrimeNumberWith(m)); }
     
+    public String display_private(){
+        String res;
+        res= "( n ; u ) = (" + n + " ; " + u + ")";
+        return res;
+    }
+    
+    public String display_public(){
+        String res;
+        res= "( n ; e ) = (" + n + " ; " + e + ")";
+        return res;
+    }
+    
     @Override
     public String toString(){
         String res;
-        res= "(" + n + " ; " + e + ")";
+        res= "( n ; e ) = (" + n + " ; " + e + ")\n";
+        res+= "( n ; u ) = (" + n + " ; " + u + ")";
         return res;
     }
 }

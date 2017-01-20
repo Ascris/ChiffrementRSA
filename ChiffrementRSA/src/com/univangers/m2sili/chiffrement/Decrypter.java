@@ -27,8 +27,8 @@ public class Decrypter {
         String text= getText();
         Key k= getPrivateKey();
         BigInteger n= k.getN();
-        BigInteger u= k.getE();//used for tests
-//        BigInteger u= k.getU();
+//        BigInteger u= k.getE();//used for tests
+        BigInteger u= k.getU();
         
         //text decryption using modulo and the private key's Bézout coefficient u
         String[] text_elem= text.split(" ");
