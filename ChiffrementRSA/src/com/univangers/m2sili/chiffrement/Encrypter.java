@@ -43,7 +43,7 @@ public class Encrypter {
         BigInteger e= k.getE();
         BigInteger n= k.getN();
         
-        //text encryption using modulo and the public key exponent e
+        //text encryption using modulo and the public key's exponent e
         String[] text_elem= part_one.split(" ");
         String current_elem;
         int current_val;
