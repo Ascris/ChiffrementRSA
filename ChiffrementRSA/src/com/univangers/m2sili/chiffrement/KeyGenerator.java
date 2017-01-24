@@ -34,6 +34,26 @@ public class KeyGenerator {
         return my_public_key;
     };
     
+    public BigInteger correctU(BigInteger u, BigInteger m){
+        BigInteger res= BigInteger.ZERO;
+        BigInteger k= new BigInteger("-1");
+        BigInteger tmp= u.subtract(k.multiply(m));
+        BigInteger two= new BigInteger("2");
+        /*
+         When two BigInteger u1 and u2 are compared with compareTo (u1.compareTo(u2), we can have 3 values :
+            0 : u1 and u2 are equal
+            1 : u1 is greater than u2
+            -1: u1 is lower than u2
+        */
+        while(!((tmp.compareTo(two) == 1) && (m.compareTo(tmp) == 1))){
+            tmp= u.subtract(k.multiply(m));
+            k= k.subtract(BigInteger.ONE);
+        }
+        res= tmp;
+        
+        return res;
+    }
+    
     public Key createPrivateKey(){
         //BigInteger used for the private key
         BigInteger p, q, n, m, e;
@@ -50,7 +70,7 @@ public class KeyGenerator {
         m= res_key.getM();
                 
         //BigInteger used for the loop
-        BigInteger r0, r1, r, u0, u1, u, v0, v1, v, PGCD;
+        BigInteger r0, r1, r, u0, u1, u, v0, v1, v, quo;
         r0= e;
 //        r0= new BigInteger("7");
         r1= m;
@@ -59,25 +79,24 @@ public class KeyGenerator {
         u1= new BigInteger("0");
         v0= new BigInteger("0");
         v1= new BigInteger("1");
+        u= u0;
+        v= v0;
         
         //Euclide's algorithm
-        PGCD= e.gcd(m);
-        u= u0.subtract((r0.divide(r1)).multiply(u1));
-        v= v0.subtract((r0.divide(r1)).multiply(v1));
-        r= r0.subtract((r0.divide(r1)).multiply(r1));
-        while(!r.equals(BigInteger.ZERO)){
-            u= u0.subtract((r0.divide(r1)).multiply(u1));
-            u0= u1;
-            u1= u;
-            
-            v= v0.subtract((r0.divide(r1)).multiply(v1));
-            v0= v1;
-            v1= v;
-            
-            r= r0.subtract((r0.divide(r1)).multiply(r1));
+        while(!r1.equals(BigInteger.ZERO)){
+            quo= r0.divide(r1);
+            r= r0;
+            u= u0;
+            v= v0;
             r0= r1;
-            r1= r;
+            u0= u1;
+            v0= v1;
+            r1= r.subtract(quo.multiply(r1));
+            u1= u.subtract(quo.multiply(u1));
+            v1= v.subtract(quo.multiply(v1));
         }
+        
+        if(u.compareTo(BigInteger.ZERO) == -1){ u= correctU(u,m); };
         
         res_key.setU(u);
         res_key.setV(v);
@@ -96,12 +115,15 @@ public class KeyGenerator {
         Encrypter encr= new Encrypter(my_message, my_public_key);
         String encrypted_message= encr.encryption();
         System.out.println("Message basique : " + my_message);
-        System.out.println("Message chiffré : " + encrypted_message);
+        System.out.println("Message chiffré : " + encrypted_message);   
         
         String test_str= "386 737 970 204 1858";
+//        my_private_key.setU(new BigInteger("5141"));
+        my_private_key.setN(new BigInteger("5141"));
         
-        Decrypter decr= new Decrypter(test_str, my_private_key);
-//        Decrypter decr= new Decrypter(encrypted_message, my_private_key);
+        
+//        Decrypter decr= new Decrypter(test_str, my_private_key);
+        Decrypter decr= new Decrypter(encrypted_message, my_private_key);
         String decrypted_message= decr.decryption();
         System.out.println("Message déchiffré : " + decrypted_message);
 

@@ -25,9 +25,9 @@ public class Decrypter {
     public String decryption(){
         String res= "";
         String text= getText();
+        
         Key k= getPrivateKey();
         BigInteger n= k.getN();
-//        BigInteger u= k.getE();//used for tests
         BigInteger u= k.getU();
         
         //text decryption using modulo and the private key's Bézout coefficient u
@@ -35,7 +35,7 @@ public class Decrypter {
         BigInteger current_val;
         for(int i= 0; i < text_elem.length; ++i){
             current_val= new BigInteger(text_elem[i]);
-            current_val= current_val.modPow(u, n);
+            current_val= current_val.modPow(n, u);
             text_elem[i]= current_val.toString();
         }
         
