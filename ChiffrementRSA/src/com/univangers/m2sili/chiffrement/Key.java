@@ -84,23 +84,31 @@ public class Key {
             }
         }
         
-        System.out.println("Mon petit entier : " + littleInteger);
+        System.out.println("Mon petit entier e : " + littleInteger);
         
         return bi;
     }
     
     public void computeE(){ setE(getFirstPrimeNumberWith(m)); }
     
-    public String display_private(){
-        String res;
-        res= "( n ; u ) = (" + n + " ; " + u + ")";
-        return res;
+    public void display_private(){
+        System.out.println("PRIVEE p= " + p);
+        System.out.println("PRIVEE q= " + q);
+        System.out.println("PRIVEE n= " + n);
+        System.out.println("PRIVEE m= " + m);
+        System.out.println("PRIVEE e= " + e);
+        System.out.println("PRIVEE u= " + u);
+        System.out.println("PRIVEE v= " + v);    
     }
     
-    public String display_public(){
-        String res;
-        res= "( n ; e ) = (" + n + " ; " + e + ")";
-        return res;
+    public void display_public(){
+        System.out.println("PUBLIC p= " + p);
+        System.out.println("PUBLIC q= " + q);
+        System.out.println("PUBLIC n= " + n);
+        System.out.println("PUBLIC m= " + m);
+        System.out.println("PUBLIC e= " + e);
+        System.out.println("PUBLIC u= " + u);
+        System.out.println("PUBLIC v= " + v);    
     }
     
     @Override
