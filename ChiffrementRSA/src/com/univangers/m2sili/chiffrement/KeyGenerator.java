@@ -2,6 +2,8 @@ package com.univangers.m2sili.chiffrement;
 
 import java.math.BigInteger;
 import java.util.Random;
+import java.util.Vector;
+import jdk.internal.util.xml.impl.Pair;
 
 /**
  * This class represents a key generator
@@ -107,16 +109,29 @@ public class KeyGenerator {
         return res_key;
     };
     
+    public Vector<Key> build_key_couple(){
+        Key public_key= createPublicKey();
+        Key private_key= createPrivateKey(public_key);
+        
+        Vector res= new Vector();
+        res.add(public_key);
+        res.add(private_key);
+        
+        return res;    
+    };
+    
     public static void main(String[] args){
         KeyGenerator k= new KeyGenerator();
-        Key my_public_key= k.createPublicKey();
+        Vector<Key> my_couple_key= k.build_key_couple();
         
-        Key my_private_key= k.createPrivateKey(my_public_key);
-        System.out.println("Clé publique");
-        my_public_key.display_public();
+        Key my_public_key= my_couple_key.firstElement();
+        Key my_private_key= my_couple_key.lastElement();
         
-        System.out.println("Clé privée");
-        my_private_key.display_private();
+//        System.out.println("Clé publique");
+//        my_public_key.display_public();
+        
+//        System.out.println("Clé privée");
+//        my_private_key.display_private();
         
         String my_message= "Bonjour !";
         Encrypter encr= new Encrypter(my_message, my_public_key);
