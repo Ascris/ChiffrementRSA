@@ -8,25 +8,14 @@ package com.univangers.m2sili.chiffrement;
 import java.math.BigInteger;
 
 public class Decrypter {
-    private String text;
-    private Key privateKey;
     
-    public Decrypter(String text_to_translate, Key private_key){
-        text= text_to_translate;
-        privateKey= private_key;
-    }
+    public Decrypter(){}
     
-    public void setText(String text) { this.text = text; }
-
-    public String getText() { return text; }
-    
-    public Key getPrivateKey() { return privateKey; }
-    
-    public String decryption(){
+    public String decryption(String text_to_translate, Key private_key){
         String res= "";
-        String text= getText();
+        String text= text_to_translate;
         
-        Key k= getPrivateKey();
+        Key k= private_key;
         BigInteger n= k.getN();
         BigInteger u= k.getU();
         
