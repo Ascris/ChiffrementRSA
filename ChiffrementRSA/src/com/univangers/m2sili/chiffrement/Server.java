@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.math.BigInteger;
 import java.net.*;
 
 
@@ -39,6 +40,7 @@ class IndividualAccept implements Runnable {
     private PrintWriter out;
     Key publicKey;
     Key privateKey;
+    Key publicKeyReceiper;
     
     public IndividualAccept(ServerSocket s, Key publicK, Key privateK){
        socketserver = s;
@@ -60,7 +62,18 @@ class IndividualAccept implements Runnable {
                 out.println("Vous êtes connecté au serveur. Clé publique ?");
                 out.flush();
                 
-                String cleIndividu = in.readLine();
+                String cleIndividuE = in.readLine();
+                String cleIndividuN = in.readLine();
+                
+                publicKeyReceiper = new Key();
+                
+                publicKeyReceiper.setE(new BigInteger(cleIndividuE));
+                publicKeyReceiper.setN(new BigInteger(cleIndividuN));
+                
+                out.println(publicKey.getE().toString());
+                out.println(publicKey.getN().toString());
+                out.flush();
+                
                 
                 // Gestion des échanges cryptés
 

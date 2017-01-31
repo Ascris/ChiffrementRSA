@@ -21,6 +21,7 @@ public class Individual {
     private BufferedReader in;
     private PrintWriter out;
     private Socket socket;
+    Encrypter en;
     
     public Individual(String name) {
         _name = name;
@@ -62,12 +63,19 @@ public class Individual {
             System.out.println("Server to "+_name+" : "+ publicKeyOtherN);
             _publicKeyReceiper.setN(new BigInteger(publicKeyOtherN));
             
+            en = new Encrypter();
             
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    public void sendMessage(String message) {
+        
+        out.println(message);
+        out.flush();
     }
     
     public void closeConnectionToServer() {
