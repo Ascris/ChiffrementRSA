@@ -2,6 +2,8 @@ package com.univangers.m2sili.chiffrement;
 
 import java.math.BigInteger;
 import java.util.Random;
+import java.util.Vector;
+import jdk.internal.util.xml.impl.Pair;
 
 /**
  * This class represents a key generator
@@ -14,17 +16,16 @@ public class KeyGenerator {
         BigInteger p, q, n, m, e;
         
         Random rand= new Random();
-//        p= BigInteger.probablePrime(500, rand);
-        p= new BigInteger("53");
+        p= BigInteger.probablePrime(2000, rand); //around 600 numbers
+//        p= new BigInteger("53");
 //        System.out.println("p = " + p);
         
-//        q= BigInteger.probablePrime(500, rand);
-        q= new BigInteger("97");
+        q= BigInteger.probablePrime(2000, rand); //around 600 numbers
+//        q= new BigInteger("97");
 //        System.out.println("q = " + q);
 
-        n= p.multiply(q);
-        //m is the Euler indicater
-        m= p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
+//        n= p.multiply(q);
+//        m= p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
 //        System.out.println("m= " + m);
         
         Key my_public_key= new Key(p,q);
@@ -56,18 +57,20 @@ public class KeyGenerator {
         return res;
     }
     
-    public Key createPrivateKey(BigInteger e, BigInteger m){
+    public Key createPrivateKey(Key public_key){
         //BigInteger used for the private key
-        BigInteger p, q, n;
+        BigInteger p, q, e, m, n;
         
-        p= new BigInteger("53");
-        q= new BigInteger("97");
+        p= public_key.getP();
+        q= public_key.getQ();
+        e= public_key.getE();
+        m= public_key.getM();
+        n= public_key.getN();
         
         Key res_key= new Key(p,q);
-        res_key.computeN();
         res_key.setE(e);
         res_key.setM(m);
-        n= res_key.getN();
+        res_key.setN(n);
         
         //BigInteger used for the loop
         BigInteger r0, r1, r, u0, u1, u, v0, v1, v, quo;
@@ -94,28 +97,11 @@ public class KeyGenerator {
             r1= r.subtract(quo.multiply(r1));
             u1= u.subtract(quo.multiply(u1));
             v1= v.subtract(quo.multiply(v1));
-            
-//            System.out.println("r= " + r);
-//            System.out.println("u= " + u);
-//            System.out.println("v= " + v);
-//            System.out.println("r0= " + r0);
-//            System.out.println("u0= " + u0);
-//            System.out.println("v0= " + v0);
-//            System.out.println("r1= " + r1);
-//            System.out.println("u1= " + u1);
-//            System.out.println("v1= " + v1);      
-            
         }
-//        System.out.println("AVANT rep, u=" + u0);
         if(u0.compareTo(BigInteger.ZERO) == -1){ u0= correctU(u0,m); };
-//        System.out.println("APRES rep, u=" + u0);
         
         BigInteger PGCD= e.gcd(m);
         BigInteger equation= e.multiply(u0).add(m.multiply(v0));
-        System.out.println("PGCD = " + PGCD);
-//        System.out.println("u = " + u0);
-//        System.out.println("v = " + v);
-        System.out.println("e x u + m x v = " + equation);
         
         res_key.setU(u0);
         res_key.setV(v0);
@@ -123,21 +109,29 @@ public class KeyGenerator {
         return res_key;
     };
     
+    public Vector<Key> build_key_couple(){
+        Key public_key= createPublicKey();
+        Key private_key= createPrivateKey(public_key);
+        
+        Vector res= new Vector();
+        res.add(public_key);
+        res.add(private_key);
+        
+        return res;    
+    };
+    
     public static void main(String[] args){
         KeyGenerator k= new KeyGenerator();
-        Key my_public_key= k.createPublicKey();
-//        my_public_key.setP(new BigInteger("53"));
-//        my_public_key.setQ(new BigInteger("97"));
-//        my_public_key.setN(new BigInteger("5141"));
-//        my_public_key.setM(new BigInteger("4992"));
-//        my_public_key.setE(new BigInteger("7"));        
+        Vector<Key> my_couple_key= k.build_key_couple();
         
-        Key my_private_key= k.createPrivateKey(my_public_key.getE(), my_public_key.getM());
-        System.out.println("Clé publique");
-        my_public_key.display_public();
+        Key my_public_key= my_couple_key.firstElement();
+        Key my_private_key= my_couple_key.lastElement();
         
-        System.out.println("Clé privée");
-        my_private_key.display_private();
+//        System.out.println("Clé publique");
+//        my_public_key.display_public();
+        
+//        System.out.println("Clé privée");
+//        my_private_key.display_private();
         
         String my_message= "Bonjour !";
         Encrypter encr= new Encrypter(my_message, my_public_key);
@@ -145,11 +139,9 @@ public class KeyGenerator {
         System.out.println("Message basique : " + my_message);
         System.out.println("Message chiffré : " + encrypted_message);   
         
-        String test_str= "386 737 970 204 1858";
-//        my_private_key.setU(new BigInteger("4279"));
-//        my_private_key.setN(new BigInteger("5141"));
-        
+//        String test_str= "386 737 970 204 1858";
 //        Decrypter decr= new Decrypter(test_str, my_private_key);
+
         Decrypter decr= new Decrypter(encrypted_message, my_private_key);
         String decrypted_message= decr.decryption();
         System.out.println("Message déchiffré : " + decrypted_message);
