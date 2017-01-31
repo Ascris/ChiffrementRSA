@@ -84,7 +84,7 @@ public class Key {
             }
         }
         
-        System.out.println("Mon petit entier e : " + littleInteger);
+//        System.out.println("Mon petit entier e : " + littleInteger);
         
         return bi;
     }
