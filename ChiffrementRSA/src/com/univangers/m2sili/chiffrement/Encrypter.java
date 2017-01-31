@@ -6,30 +6,18 @@
 package com.univangers.m2sili.chiffrement;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 
 public class Encrypter {
-    private String text;
-    private Key publicKey;
     
-    public Encrypter(String text_to_translate, Key public_key){
-        text= text_to_translate;
-        publicKey= public_key;
-    }
-    
-    public void setText(String text) { this.text = text; }
-
-    public String getText() { return text; }
-    
-    public Key getPublicKey() { return publicKey; }
+    public Encrypter(){}
     
     /**
      * Generate the encryption of the text field (ascii style)
      * @return the encrypted text
      */
-    public String encryption(){
+    public String encryption(String text_to_translate, Key public_key){
         String res= "";
-        String text= getText();
+        String text= text_to_translate;
         
         String part_one= res;
         //text encryption using ascii table
@@ -39,9 +27,8 @@ public class Encrypter {
             part_one= part_one + c_ascii + " ";
         }
         
-        Key k= getPublicKey();
-        BigInteger e= k.getE();
-        BigInteger n= k.getN();
+        BigInteger e= public_key.getE();
+        BigInteger n= public_key.getN();
         
         //text encryption using modulo and the public key's exponent e
         String[] text_elem= part_one.split(" ");

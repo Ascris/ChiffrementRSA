@@ -134,16 +134,16 @@ public class KeyGenerator {
 //        my_private_key.display_private();
         
         String my_message= "Bonjour !";
-        Encrypter encr= new Encrypter(my_message, my_public_key);
-        String encrypted_message= encr.encryption();
+        Encrypter encr= new Encrypter();
+        String encrypted_message= encr.encryption(my_message, my_public_key);
         System.out.println("Message basique : " + my_message);
         System.out.println("Message chiffré : " + encrypted_message);   
         
 //        String test_str= "386 737 970 204 1858";
 //        Decrypter decr= new Decrypter(test_str, my_private_key);
 
-        Decrypter decr= new Decrypter(encrypted_message, my_private_key);
-        String decrypted_message= decr.decryption();
+        Decrypter decr= new Decrypter();
+        String decrypted_message= decr.decryption(encrypted_message, my_private_key);
         System.out.println("Message déchiffré : " + decrypted_message);
 
     }
