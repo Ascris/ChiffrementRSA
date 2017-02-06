@@ -16,6 +16,7 @@ public class Emission implements Runnable {
     
     private PrintWriter out;
     private String message;
+    private String cryptedMessage;
     private Scanner sc;
     private Key publicKey;
     private Encrypter en;
@@ -31,10 +32,15 @@ public class Emission implements Runnable {
     @Override
     public void run() {
         sc = new Scanner(System.in);
-        while(true){
-            System.out.println("Your message : ");
+        boolean exit = false;
+        System.out.println("Your message (\"bye\" to close) : ");
+        while(!exit){
             message = sc.nextLine();
-            out.println(message);
+            if (message.equals("bye")) {
+                exit = true;
+            }
+            cryptedMessage = en.encryption(message, publicKey);
+            out.println(cryptedMessage);
             out.flush();
         }
     }

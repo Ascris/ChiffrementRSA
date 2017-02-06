@@ -92,7 +92,7 @@ class IndividualAccept implements Runnable {
             while(true){
                 initConnection();
                 
-                String message = in.readLine();
+                /*String message = in.readLine();
                 System.out.println("Bob receive : " + message);
                 String messageDecrypted = de.decryption(message, privateKey);
                 System.out.println("Bob decrypted : " + messageDecrypted);
@@ -100,9 +100,13 @@ class IndividualAccept implements Runnable {
                 String messageEncrypted = en.encryption(messageDecrypted, publicKeyReceiper);
                 System.out.println("Bob encrypted : " + messageEncrypted);
                 out.println(messageEncrypted);
-                out.flush();
-
-                socket.close();
+                out.flush();*/
+                
+                Thread t1 = new Thread(new Emission(out, publicKeyReceiper, "Bob"));
+                t1.start();
+                Thread t2 = new Thread(new Reception(in, privateKey, "Bob"));
+                t2.start();
+                //socket.close();
             }
         } catch (IOException e) {
             e.printStackTrace();
