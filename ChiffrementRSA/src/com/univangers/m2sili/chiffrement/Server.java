@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.net.*;
+import java.util.Vector;
 
 
 public class Server {
@@ -19,8 +20,12 @@ public class Server {
         Key privateKey;
         Key publicKey;
         try {
-            privateKey = new Key();
-            publicKey = new Key();
+            KeyGenerator gen = new KeyGenerator();
+            Vector<Key> coupleKey = gen.build_key_couple();
+            
+            publicKey = coupleKey.firstElement();
+            privateKey = coupleKey.lastElement();
+            
             socket = new ServerSocket(PORTNUMBER);
             System.out.println("Serveur : Serveur à l'écoute du port "+socket.getLocalPort());
             Thread t = new Thread(new IndividualAccept(socket, publicKey, privateKey));
@@ -41,41 +46,61 @@ class IndividualAccept implements Runnable {
     Key publicKey;
     Key privateKey;
     Key publicKeyReceiper;
+    Encrypter en;
+    Decrypter de;
     
     public IndividualAccept(ServerSocket s, Key publicK, Key privateK){
        socketserver = s;
        publicKey = publicK;
        privateKey = privateK;
+       en = new Encrypter();
+       de = new Decrypter();
     }
+    
+    
+    private void initConnection() throws IOException {
+        
+        socket = socketserver.accept(); // Un individu se connecte et est accepté
+        System.out.println("Bob : Connection accepted !");
+
+        out = new PrintWriter(socket.getOutputStream());
+        in = new BufferedReader (new InputStreamReader(socket.getInputStream()));
+
+        out.println("You are connect to Bob. Public key ?");
+        out.flush();
+
+        String cleIndividuE = in.readLine();
+        String cleIndividuN = in.readLine();
+
+        publicKeyReceiper = new Key();
+
+        publicKeyReceiper.setE(new BigInteger(cleIndividuE));
+        publicKeyReceiper.setN(new BigInteger(cleIndividuN));
+
+        out.println(publicKey.getE().toString());
+        out.println(publicKey.getN().toString());
+        out.flush();
+    }
+    
+    
+    
+    
 
     public void run() {
 
         try {
             while(true){
-                socket = socketserver.accept(); // Un individu se connecte et est accepté
+                initConnection();
                 
-                System.out.println("Serveur : Acceptation d'une connexion !");
+                String message = in.readLine();
+                System.out.println("Bob receive : " + message);
+                String messageDecrypted = de.decryption(message, privateKey);
+                System.out.println("Bob decrypted : " + messageDecrypted);
                 
-                out = new PrintWriter(socket.getOutputStream());
-                in = new BufferedReader (new InputStreamReader(socket.getInputStream()));
-                
-                out.println("Vous êtes connecté au serveur. Clé publique ?");
+                String messageEncrypted = en.encryption(messageDecrypted, publicKeyReceiper);
+                System.out.println("Bob encrypted : " + messageEncrypted);
+                out.println(messageEncrypted);
                 out.flush();
-                
-                String cleIndividuE = in.readLine();
-                String cleIndividuN = in.readLine();
-                
-                publicKeyReceiper = new Key();
-                
-                publicKeyReceiper.setE(new BigInteger(cleIndividuE));
-                publicKeyReceiper.setN(new BigInteger(cleIndividuN));
-                
-                out.println(publicKey.getE().toString());
-                out.println(publicKey.getN().toString());
-                out.flush();
-                
-                
-                // Gestion des échanges cryptés
 
                 socket.close();
             }

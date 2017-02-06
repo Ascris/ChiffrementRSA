@@ -22,6 +22,7 @@ public class Individual {
     private PrintWriter out;
     private Socket socket;
     Encrypter en;
+    Decrypter de;
     
     public Individual(String name) {
         _name = name;
@@ -31,39 +32,39 @@ public class Individual {
         _name = name;
         _publicKey = publicK;
         _privateKey = privateK;
+        en = new Encrypter();
+        de = new Decrypter();
     }
     
     public void startConnectionToServer(int PortNumber) {
         try {
-            System.out.println("Connexion au serveur au port " + PortNumber + " ...");
+            System.out.println("Connection to Bob at port " + PortNumber + " ...");
             socket = new Socket("localhost", PortNumber);
-            System.out.println("Connexion accepté !");
+            System.out.println("Connection accepted !");
             
             out = new PrintWriter(socket.getOutputStream());
             in = new BufferedReader (new InputStreamReader (socket.getInputStream()));
             
             String messageServer = in.readLine();
-            System.out.println("Serveur to "+_name+" : "+messageServer);
+            System.out.println("Bob to "+_name+" : "+messageServer);
             
             
             
-            System.out.println(_name+" to Serveur : "+ _publicKey.getE().toString()); // Envoi de sa clé publique
+            System.out.println(_name+" to Bob : "+ _publicKey.getE().toString()); // Envoi de sa clé publique
             out.println(_publicKey.getE().toString());
-            System.out.println(_name+" to Serveur : "+ _publicKey.getN().toString()); // Envoi de sa clé publique
+            System.out.println(_name+" to Bob : "+ _publicKey.getN().toString()); // Envoi de sa clé publique
             out.println(_publicKey.getN().toString());
             
             out.flush();
             
             _publicKeyReceiper = new Key();
             String publicKeyOtherE = in.readLine(); // Récupération de la clé publique de l'autre individu
-            System.out.println("Server to "+_name+" : "+ publicKeyOtherE);
+            System.out.println("Bob to "+_name+" : "+ publicKeyOtherE);
             _publicKeyReceiper.setE(new BigInteger(publicKeyOtherE));
             
             String publicKeyOtherN = in.readLine(); // Récupération de la clé publique de l'autre individu
-            System.out.println("Server to "+_name+" : "+ publicKeyOtherN);
+            System.out.println("Bob to "+_name+" : "+ publicKeyOtherN);
             _publicKeyReceiper.setN(new BigInteger(publicKeyOtherN));
-            
-            en = new Encrypter();
             
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -73,9 +74,17 @@ public class Individual {
     }
     
     public void sendMessage(String message) {
-        
-        out.println(message);
+        String cryptedMessage = en.encryption(message, _publicKeyReceiper);
+        System.out.println(_name + " to Bob : (non-crypted message) " + message);
+        System.out.println(_name + " to Bob : (crypted message) " + cryptedMessage);
+        out.println(cryptedMessage);
         out.flush();
+    }
+    
+    public String receiveMessage() throws IOException {
+        String messageReceive = in.readLine();
+        System.out.println("Bob to "+_name+" : "+ messageReceive);
+        return de.decryption(messageReceive, _privateKey);
     }
     
     public void closeConnectionToServer() {
@@ -91,6 +100,13 @@ public class Individual {
         Vector<Key> coupleKey = gen.build_key_couple();
         Individual Alice = new Individual("Alice", coupleKey.firstElement(), coupleKey.lastElement());
         Alice.startConnectionToServer(Server.PORTNUMBER);
+        Alice.sendMessage("Coucou Bob ! Ca va ?");
+        try {
+            String messageDecrypted = Alice.receiveMessage();
+            System.out.println("Message receive from Bob : " + messageDecrypted);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         Alice.closeConnectionToServer();
     }
 }

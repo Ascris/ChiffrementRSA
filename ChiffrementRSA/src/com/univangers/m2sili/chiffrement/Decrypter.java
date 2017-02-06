@@ -22,15 +22,11 @@ public class Decrypter {
         //text decryption using modulo and the private key's Bézout coefficient u
         String[] text_elem= text.split(" ");
         BigInteger current_val;
-        System.out.print("Message en clair : ");
         for(int i= 0; i < text_elem.length; ++i){
             current_val= new BigInteger(text_elem[i]);
             current_val= current_val.modPow(u, n);
             text_elem[i]= current_val.toString();
-            
-            System.out.print(current_val.toString()+ " ");
         }
-        System.out.println();
         //text decryption using ascii table
         for(int i= 0; i < text_elem.length; ++i){
             int val= Integer.parseInt(text_elem[i]);
