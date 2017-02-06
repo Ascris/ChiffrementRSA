@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.net.*;
+import java.util.Scanner;
 import java.util.Vector;
 
 /**
@@ -36,10 +37,11 @@ public class Individual {
         de = new Decrypter();
     }
     
-    public void startConnectionToServer(int PortNumber) {
+    public void startConnectionToServer(InetAddress IP, int PortNumber) {
         try {
             System.out.println("Connection to Bob at port " + PortNumber + " ...");
-            socket = new Socket("localhost", PortNumber);
+            socket = new Socket(IP, PortNumber);
+//            socket = new Socket("localhost", PortNumber);
             System.out.println("Connection accepted !");
             
             out = new PrintWriter(socket.getOutputStream());
@@ -95,11 +97,22 @@ public class Individual {
         }
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws UnknownHostException{
         KeyGenerator gen = new KeyGenerator();
         Vector<Key> coupleKey = gen.build_key_couple();
+        System.out.println("localhost IP : " + InetAddress.getLocalHost().toString());
+        System.out.println("Saisissez IP sur laquelle se connecter : ");
+        Scanner sc = new Scanner(System.in);
+        String IP = sc.nextLine();
+        System.out.println();
+        
+        System.out.println("Saisissez le port sur lequel se connecter : ");
+        int portNb = sc.nextInt();
+        System.out.println();
+        
         Individual Alice = new Individual("Alice", coupleKey.firstElement(), coupleKey.lastElement());
-        Alice.startConnectionToServer(Server.PORTNUMBER);
+//        Alice.startConnectionToServer("localhost", Server.PORTNUMBER);
+        Alice.startConnectionToServer(InetAddress.getByName(IP), portNb);
         Alice.sendMessage("Coucou Bob ! Ca va ?");
         try {
             String messageDecrypted = Alice.receiveMessage();
