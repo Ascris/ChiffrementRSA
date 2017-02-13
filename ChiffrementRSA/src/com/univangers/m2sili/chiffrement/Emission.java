@@ -5,14 +5,16 @@
  */
 package com.univangers.m2sili.chiffrement;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.Scanner;
 
 /**
  *
  * @author etudiant
  */
-public class Emission implements Runnable {
+public class Emission extends Thread {
     
     private PrintWriter out;
     private String message;
@@ -21,23 +23,24 @@ public class Emission implements Runnable {
     private Key publicKey;
     private Encrypter en;
     private String name;
+    private boolean stop;
     
     public Emission(PrintWriter out, Key publicKey, String name) {
         this.out = out;
         this.publicKey = publicKey;
         en = new Encrypter();
         this.name = name;
+        this.stop = false;
     }
 
     @Override
     public void run() {
         sc = new Scanner(System.in);
-        boolean exit = false;
         System.out.println("Your message (\"bye\" to close) : ");
-        while(!exit){
+        while (!this.stop){
             message = sc.nextLine();
             if (message.equals("bye")) {
-                exit = true;
+                this.stop = true;
             }
             cryptedMessage = en.encryption(message, publicKey);
             out.println(cryptedMessage);

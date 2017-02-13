@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.net.*;
+import java.util.Scanner;
 import java.util.Vector;
 
 /**
@@ -21,8 +22,9 @@ public class Individual {
     private BufferedReader in;
     private PrintWriter out;
     private Socket socket;
-    Encrypter en;
-    Decrypter de;
+    private Encrypter en;
+    private Decrypter de;
+    
     
     public Individual(String name) {
         _name = name;
@@ -36,10 +38,10 @@ public class Individual {
         de = new Decrypter();
     }
     
-    public void startConnectionToServer(int PortNumber) {
+    public void startConnectionToServer(InetAddress IP, int PortNumber) {
         try {
             System.out.println("Connection to Bob at port " + PortNumber + " ...");
-            socket = new Socket("localhost", PortNumber);
+            socket = new Socket(IP, PortNumber);
             System.out.println("Connection accepted !");
             
             out = new PrintWriter(socket.getOutputStream());
@@ -66,10 +68,10 @@ public class Individual {
             System.out.println("Bob to "+_name+" : "+ publicKeyOtherN);
             _publicKeyReceiper.setN(new BigInteger(publicKeyOtherN));
             
-            Thread t1 = new Thread(new Emission(out, _publicKeyReceiper, "Alice"));
-            t1.start();
-            Thread t2 = new Thread(new Reception(in, _privateKey, "Alice"));
-            t2.start();
+            Emission e = new Emission(out, _publicKeyReceiper, "Alice");
+            Reception r = new Reception(in, _privateKey, "Alice");
+            e.start();
+            r.start();
             
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -100,18 +102,23 @@ public class Individual {
         }
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws UnknownHostException{
         KeyGenerator gen = new KeyGenerator();
         Vector<Key> coupleKey = gen.build_key_couple();
+        System.out.println("localhost IP : " + InetAddress.getLocalHost().toString());
+        System.out.println("Saisissez IP sur laquelle se connecter : ");
+        Scanner sc = new Scanner(System.in);
+        String IP = sc.nextLine();
+        System.out.println();
+        
+        System.out.println("Saisissez le port sur lequel se connecter : ");
+        int portNb = sc.nextInt();
+        System.out.println();
+        
         Individual Alice = new Individual("Alice", coupleKey.firstElement(), coupleKey.lastElement());
-        Alice.startConnectionToServer(Server.PORTNUMBER);
-        /*Alice.sendMessage("Coucou Bob ! Ca va ?");
-        try {
-            String messageDecrypted = Alice.receiveMessage();
-            System.out.println("Message receive from Bob : " + messageDecrypted);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Alice.closeConnectionToServer();*/
+
+        Alice.startConnectionToServer(InetAddress.getByName(IP), portNb);
+        
+        //Alice.closeConnectionToServer();
     }
 }

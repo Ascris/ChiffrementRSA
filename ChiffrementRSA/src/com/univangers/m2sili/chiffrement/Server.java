@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.net.*;
+import java.util.Scanner;
 import java.util.Vector;
 
 
@@ -26,8 +27,13 @@ public class Server {
             publicKey = coupleKey.firstElement();
             privateKey = coupleKey.lastElement();
             
-            socket = new ServerSocket(PORTNUMBER);
-            System.out.println("Serveur : Serveur à l'écoute du port "+socket.getLocalPort());
+            System.out.print("Saisissez le port sur lequel ouvrir une connexion : ");
+            Scanner scan = new Scanner(System.in);
+            int portNb= scan.nextInt();
+            System.out.println();
+            
+            socket = new ServerSocket(portNb);
+            System.out.print("Serveur : Serveur à l'écoute du port "+socket.getLocalPort());
             Thread t = new Thread(new IndividualAccept(socket, publicKey, privateKey));
             t.start();
             System.out.println("");
@@ -102,11 +108,11 @@ class IndividualAccept implements Runnable {
                 out.println(messageEncrypted);
                 out.flush();*/
                 
-                Thread t1 = new Thread(new Emission(out, publicKeyReceiper, "Bob"));
-                t1.start();
-                Thread t2 = new Thread(new Reception(in, privateKey, "Bob"));
-                t2.start();
-                //socket.close();
+                Emission e = new Emission(out, publicKeyReceiper, "Bob");
+                Reception r = new Reception(in, privateKey, "Bob");
+                e.start();
+                r.start();
+                
             }
         } catch (IOException e) {
             e.printStackTrace();
