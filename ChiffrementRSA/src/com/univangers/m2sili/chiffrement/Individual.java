@@ -105,9 +105,21 @@ public class Individual {
     public static void main(String[] args) throws UnknownHostException{
         KeyGenerator gen = new KeyGenerator();
         Vector<Key> coupleKey = gen.build_key_couple();
+        Scanner sc = new Scanner(System.in);
+        
+        boolean key_details= true;
+        if(key_details){
+            System.out.println("Clé publique d'Alice");
+            System.out.println("n  : " + coupleKey.firstElement().getN());
+            System.out.println("e  : " + coupleKey.firstElement().getE());
+
+            System.out.println("Clé privée d'Alice");
+            System.out.println("n  : " + coupleKey.lastElement().getN());
+            System.out.println("u  : " + coupleKey.lastElement().getU());
+        }
+        
         System.out.println("localhost IP : " + InetAddress.getLocalHost().toString());
         System.out.println("Saisissez IP sur laquelle se connecter : ");
-        Scanner sc = new Scanner(System.in);
         String IP = sc.nextLine();
         System.out.println();
         

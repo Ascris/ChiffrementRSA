@@ -27,6 +27,17 @@ public class Server {
             publicKey = coupleKey.firstElement();
             privateKey = coupleKey.lastElement();
             
+            boolean key_details= true;
+            if(key_details){
+                System.out.println("Clé publique de Bob");
+                System.out.println("n  : " + publicKey.getN());
+                System.out.println("e  : " + publicKey.getE());
+
+                System.out.println("Clé privée de Bob");
+                System.out.println("n  : " + privateKey.getN());
+                System.out.println("u  : " + privateKey.getU());
+            }
+            
             System.out.print("Saisissez le port sur lequel ouvrir une connexion : ");
             Scanner scan = new Scanner(System.in);
             int portNb= scan.nextInt();
